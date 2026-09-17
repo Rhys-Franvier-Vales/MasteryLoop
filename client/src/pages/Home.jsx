@@ -110,7 +110,7 @@ function Home() {
 
       <footer className="border-t border-white/5 py-10">
         <p className="max-w-5xl mx-auto px-6 md:px-10 text-muted text-sm">
-          Mastery Loop — MCA final year project
+          Mastery Loop
         </p>
       </footer>
     </div>
