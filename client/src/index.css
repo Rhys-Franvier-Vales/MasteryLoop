@@ -1,14 +1,45 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #0F1226;
-  --color-surface: #171B36;
-  --color-ink: #EDEFFB;
-  --color-muted: #8A8FB8;
-  --color-gold: #F2B705;
-  --color-teal: #34D1BF;
+  --color-bg: #16111F;
+  --color-surface: #221A30;
+  --color-raised: #2E2440;
+  --color-ink: #F2EDFF;
+  --color-muted: #9A8FB5;
+  --color-gold: #FFB547;
+  --color-mint: #5EE6C5;
+  --color-rose: #FF6B8A;
 
-  --font-display: "Sora", sans-serif;
-  --font-body: "Inter", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --font-display: "Bricolage Grotesque", sans-serif;
+  --font-body: "Instrument Sans", sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+/* Tabular figures for stats — replaces the monospace-label habit */
+.nums {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Visible keyboard focus everywhere */
+:focus-visible {
+  outline: 2px solid var(--color-mint);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

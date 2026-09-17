@@ -1,187 +1,178 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import Modal from "../components/common/Modal";
 
-const mockUser = { name: "Rhys", email: "rhys@example.com", xp: 1240, level: 6, streak: 9 };
+const mockUser = { name: "Riya", email: "riya@example.com", level: 6 };
 
-const mockStats = [
-  { label: "Total XP", value: "1,240", accent: "gold" },
-  { label: "Current Streak", value: "9 days", accent: "teal" },
-  { label: "Nodes Mastered", value: "14 / 32", accent: "gold" },
+const stats = [
+  { label: "Experience earned", value: "1,240", tone: "gold" },
+  { label: "Day streak", value: "9", tone: "mint" },
+  { label: "Nodes mastered", value: "14/32", tone: "ink" },
 ];
 
-const mockQuestsDueToday = [
-  { id: 1, title: "Recursion Basics", difficulty: "Easy", xp: 20 },
-  { id: 2, title: "Binary Search Trees", difficulty: "Medium", xp: 35 },
-  { id: 3, title: "Graph Traversal", difficulty: "Hard", xp: 50 },
+const dueToday = [
+  { id: 1, title: "Recursion basics", strength: 0.34, xp: 20 },
+  { id: 2, title: "Binary search trees", strength: 0.18, xp: 35 },
+  { id: 3, title: "Graph traversal", strength: 0.09, xp: 50 },
 ];
+
+const field = "w-full bg-bg text-ink text-sm rounded-xl px-4 py-2.5 border border-white/10 focus:border-mint outline-none transition-colors placeholder:text-muted/50";
+const label = "block text-muted text-xs mb-1.5";
+const toneClass = { gold: "text-gold", mint: "text-mint", ink: "text-ink" };
 
 function Dashboard() {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
 
-  // Edit form state, pre-filled from mock user
   const [name, setName] = useState(mockUser.name);
   const [email, setEmail] = useState(mockUser.email);
   const [password, setPassword] = useState("");
-  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [avatar, setAvatar] = useState(null);
 
-  function handleAvatarChange(e) {
+  function handleAvatar(e) {
     const file = e.target.files[0];
-    if (file) {
-      setAvatarPreview(URL.createObjectURL(file));
-    }
+    if (file) setAvatar(URL.createObjectURL(file));
   }
 
-  function handleSaveProfile(e) {
+  function saveProfile(e) {
     e.preventDefault();
-    // Placeholder — becomes a real API call once backend exists
-    console.log("Saving profile:", { name, email, password, avatarPreview });
+    console.log("Saving profile:", { name, email, password, avatar });
     setEditOpen(false);
   }
 
   return (
-    <div className="bg-bg min-h-screen font-body">
-      {/* Top bar */}
-      <nav className="flex items-center justify-between px-8 py-5 max-w-6xl mx-auto relative">
-        <Link to="/" className="font-display font-bold text-xl text-ink">
-          Mastery<span className="text-gold">Loop</span>
+    <div className="min-h-screen">
+      <nav className="flex items-center justify-between px-6 md:px-10 py-6 max-w-6xl mx-auto">
+        <Link to="/" className="font-display font-extrabold text-xl tracking-tight text-ink">
+          Mastery Loop
         </Link>
 
         <div className="flex items-center gap-3 relative">
-          <span className="text-muted text-sm">Level {mockUser.level}</span>
+          <span className="text-muted text-sm hidden sm:block">Level {mockUser.level}</span>
 
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="w-9 h-9 rounded-full bg-surface border border-white/10 flex items-center justify-center text-ink font-display font-semibold text-sm overflow-hidden 
-           transition hover: border-teal/60 hover:bg-white/10 cursor-pointer"
+          <motion.button
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.94 }}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Account menu"
+            className="w-10 h-10 rounded-full bg-raised border border-white/10 flex items-center justify-center text-ink font-display font-bold overflow-hidden hover:border-mint/60 transition-colors"
           >
-            {avatarPreview ? (
-              <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
-            ) : (
-              name.charAt(0)
-            )}
-          </button>
+            {avatar ? <img src={avatar} alt="" className="w-full h-full object-cover" /> : name.charAt(0)}
+          </motion.button>
 
-          {/* Dropdown */}
-          {dropdownOpen && (
-            <>
-              {/* Click-outside backdrop */}
-              <div
-                onClick={() => setDropdownOpen(false)}
-                className="fixed inset-0 z-40"
-              />
-              <div className="absolute right-0 top-12 z-50 bg-surface border border-white/10 rounded-xl py-2 w-44 shadow-lg">
-                <button
-                  onClick={() => { setEditOpen(true); setDropdownOpen(false); }}
-                  className="w-full text-left px-4 py-2 text-sm text-ink hover:bg-white/5 transition"
+          <AnimatePresence>
+            {menuOpen && (
+              <>
+                <div onClick={() => setMenuOpen(false)} className="fixed inset-0 z-40" />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: -6 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -6 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 28 }}
+                  className="absolute right-0 top-13 z-50 origin-top-right bg-raised border border-white/10 rounded-2xl p-1.5 w-48"
                 >
-                  Edit Profile
-                </button>
-                <button
-                  onClick={() => setDropdownOpen(false)}
-                  className="w-full text-left px-4 py-2 text-sm text-muted hover:bg-white/5 transition"
-                >
-                  Log Out
-                </button>
-              </div>
-            </>
-          )}
+                  <button
+                    onClick={() => { setEditOpen(true); setMenuOpen(false); }}
+                    className="w-full text-left px-3.5 py-2.5 text-sm text-ink rounded-xl hover:bg-white/5 transition-colors"
+                  >
+                    Edit profile
+                  </button>
+                  <Link to="/skilltree" onClick={() => setMenuOpen(false)} className="block px-3.5 py-2.5 text-sm text-ink rounded-xl hover:bg-white/5 transition-colors">
+                    Skill tree
+                  </Link>
+                  <button
+                    onClick={() => setMenuOpen(false)}
+                    className="w-full text-left px-3.5 py-2.5 text-sm text-muted rounded-xl hover:bg-white/5 transition-colors"
+                  >
+                    Log out
+                  </button>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
         </div>
       </nav>
 
-      <main className="max-w-6xl mx-auto px-6 pb-16">
-        <div className="mt-4 mb-10">
-          <h1 className="font-display font-bold text-3xl text-ink">
-            Welcome back, {mockUser.name}
+      <main className="max-w-6xl mx-auto px-6 md:px-10 pb-20">
+        <header className="mt-6 mb-12">
+          <h1 className="font-display font-extrabold text-4xl md:text-5xl tracking-tight text-ink">
+            Three topics are ready, {mockUser.name}.
           </h1>
-          <p className="text-muted mt-1">Here's where your practice stands today.</p>
-        </div>
+          <p className="text-muted mt-2">They're at their weakest right now, which is exactly when recall sticks.</p>
+        </header>
 
-        <div className="grid sm:grid-cols-3 gap-5 mb-12">
-          {mockStats.map((stat) => (
-            <div key={stat.label} className="bg-surface rounded-2xl p-6 border border-white/5">
-              <p className="text-muted text-sm mb-2">{stat.label}</p>
-              <p className={`font-mono font-semibold text-2xl ${stat.accent === "gold" ? "text-gold" : "text-teal"}`}>
-                {stat.value}
-              </p>
+        <div className="grid sm:grid-cols-3 gap-4 mb-14">
+          {stats.map((s) => (
+            <div key={s.label} className="rounded-2xl bg-surface border border-white/5 px-6 py-6">
+              <p className={`nums font-bold text-4xl ${toneClass[s.tone]}`}>{s.value}</p>
+              <p className="text-muted text-sm mt-1.5">{s.label}</p>
             </div>
           ))}
         </div>
 
-        <div>
-          <h2 className="font-display font-semibold text-xl text-ink mb-5">Due Today</h2>
-          <div className="flex flex-col gap-3">
-            {mockQuestsDueToday.map((quest) => (
-              <div
-                key={quest.id}
-                className="bg-surface rounded-xl px-5 py-4 border border-white/5 flex items-center justify-between hover:border-teal/40 transition"
-              >
-                <div>
-                  <p className="text-ink font-body font-medium">{quest.title}</p>
-                  <p className="text-muted text-xs mt-1">{quest.difficulty}</p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="font-mono text-gold text-sm">+{quest.xp} XP</span>
-                  <button className="bg-teal text-bg font-body font-semibold text-sm px-4 py-1.5 rounded-full hover:opacity-90 transition">
-                    Practice
-                  </button>
+        <h2 className="font-display font-bold text-xl text-ink mb-5">Ready to review</h2>
+        <div className="flex flex-col gap-2.5">
+          {dueToday.map((q) => (
+            <motion.div
+              key={q.id}
+              whileHover={{ x: 4 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              className="rounded-xl bg-surface border border-white/5 px-5 py-4 flex items-center justify-between gap-4"
+            >
+              <div className="min-w-0">
+                <p className="text-ink font-medium truncate">{q.title}</p>
+                {/* strength meter — shows why it surfaced today */}
+                <div className="flex items-center gap-2.5 mt-2">
+                  <div className="h-1 w-28 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-full rounded-full bg-rose" style={{ width: `${q.strength * 100}%` }} />
+                  </div>
+                  <span className="text-muted text-xs">{Math.round(q.strength * 100)}% strength</span>
                 </div>
               </div>
-            ))}
-          </div>
+
+              <div className="flex items-center gap-4 shrink-0">
+                <span className="nums text-gold text-sm">+{q.xp}</span>
+                <motion.div whileTap={{ scale: 0.96 }}>
+                  <Link to="/practice" className="inline-block bg-mint text-bg font-semibold text-sm px-4 py-2 rounded-full">
+                    Review
+                  </Link>
+                </motion.div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </main>
 
-      {/* Edit Profile Modal */}
-      <Modal isOpen={editOpen} onClose={() => setEditOpen(false)} title="Edit Profile">
-        <form onSubmit={handleSaveProfile}>
-          {/* Avatar upload */}
-          <div className="flex items-center gap-4 mb-5">
-            <div className="w-14 h-14 rounded-full bg-bg border border-white/10 flex items-center justify-center text-ink font-display font-semibold overflow-hidden">
-              {avatarPreview ? (
-                <img src={avatarPreview} alt="Preview" className="w-full h-full object-cover" />
-              ) : (
-                name.charAt(0)
-              )}
+      <Modal
+        isOpen={editOpen}
+        onClose={() => setEditOpen(false)}
+        title="Edit profile"
+        subtitle="Changes apply the next time you log in."
+      >
+        <form onSubmit={saveProfile}>
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-16 h-16 rounded-full bg-bg border border-white/10 flex items-center justify-center text-ink font-display font-bold text-xl overflow-hidden">
+              {avatar ? <img src={avatar} alt="" className="w-full h-full object-cover" /> : name.charAt(0)}
             </div>
-            <label className="text-teal text-sm cursor-pointer hover:underline">
+            <label className="text-mint text-sm cursor-pointer hover:underline">
               Change photo
-              <input type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
+              <input type="file" accept="image/*" onChange={handleAvatar} className="hidden" />
             </label>
           </div>
 
-          <label className="block text-muted text-xs mb-1">Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full bg-bg text-ink text-sm rounded-lg px-3 py-2 mb-4 border border-white/10 focus:border-teal outline-none transition"
-          />
+          <label className={label}>Name</label>
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} className={field + " mb-4"} />
 
-          <label className="block text-muted text-xs mb-1">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-bg text-ink text-sm rounded-lg px-3 py-2 mb-4 border border-white/10 focus:border-teal outline-none transition"
-          />
+          <label className={label}>Email</label>
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={field + " mb-4"} />
 
-          <label className="block text-muted text-xs mb-1">New Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Leave blank to keep current password"
-            className="w-full bg-bg text-ink text-sm rounded-lg px-3 py-2 mb-6 border border-white/10 focus:border-teal outline-none transition"
-          />
+          <label className={label}>New password</label>
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Leave blank to keep your current one" className={field + " mb-7"} />
 
-          <button
-            type="submit"
-            className="w-full bg-gold text-bg font-display font-bold py-2.5 rounded-full hover:opacity-90 transition"
-          >
-            Save Changes
-          </button>
+          <motion.button whileTap={{ scale: 0.98 }} type="submit" className="w-full bg-gold text-bg font-display font-bold py-3 rounded-full">
+            Save changes
+          </motion.button>
         </form>
       </Modal>
     </div>

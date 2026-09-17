@@ -1,163 +1,126 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+
+const field =
+  "w-full bg-bg text-ink text-sm rounded-xl px-4 py-2.5 border border-white/10 focus:border-mint outline-none transition-colors placeholder:text-muted/50";
+const label = "block text-muted text-xs mb-1.5";
 
 function Login() {
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [flipped, setFlipped] = useState(false);
+  const [error, setError] = useState("");
 
-  // Login state
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-
-  // Signup state
   const [name, setName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
 
-  const [error, setError] = useState("");
-
   function handleLogin(e) {
     e.preventDefault();
-    if (!loginEmail || !loginPassword) {
-      setError("Please fill in both fields.");
-      return;
-    }
+    if (!loginEmail || !loginPassword) return setError("Enter your email and password.");
     setError("");
-    console.log("Logging in with:", { loginEmail, loginPassword });
+    console.log("Logging in:", { loginEmail, loginPassword });
   }
 
   function handleSignup(e) {
     e.preventDefault();
-    if (!name || !signupEmail || !signupPassword) {
-      setError("Please fill in all fields.");
-      return;
-    }
+    if (!name || !signupEmail || !signupPassword) return setError("Fill in every field to create your account.");
     setError("");
-    console.log("Signing up with:", { name, signupEmail, signupPassword });
+    console.log("Signing up:", { name, signupEmail, signupPassword });
+  }
+
+  function flip(to) {
+    setFlipped(to);
+    setError("");
   }
 
   return (
-    <div className="bg-bg min-h-screen flex items-center justify-center px-6 font-body">
+    <div className="min-h-screen flex items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm">
-        <Link to="/" className="block text-center mb-8">
-          <span className="font-display font-bold text-2xl text-ink">
-            Mastery<span className="text-gold">Loop</span>
-          </span>
+        <Link to="/" className="block text-center font-display font-extrabold text-xl tracking-tight text-ink mb-8">
+          Mastery Loop
         </Link>
 
-        {/* Flip container — perspective must live on the parent */}
-        <div className="[perspective:1200px]">
-          <div
-            className={`relative transition-transform duration-700 [transform-style:preserve-3d] ${
-              isFlipped ? "[transform:rotateY(180deg)]" : ""
-            }`}
+        <div className="[perspective:1400px]">
+          <motion.div
+            className="relative [transform-style:preserve-3d] min-h-[520px]"
+            animate={{ rotateY: flipped ? 180 : 0 }}
+            transition={{ type: "spring", stiffness: 160, damping: 22 }}
           >
-            {/* FRONT FACE — Login */}
-            <div className="[backface-visibility:hidden] bg-surface rounded-2xl p-6 border border-white/5 min-h-[405px]">
-              <h2 className="font-display font-semibold text-lg text-ink mb-4 mt-10">Log In</h2>
+            {/* Front — log in */}
+            <div className="absolute inset-0 [backface-visibility:hidden] bg-surface rounded-3xl p-7 border border-white/5">
+              <h1 className="font-display font-bold text-2xl text-ink">Welcome back</h1>
+              <p className="text-muted text-sm mt-1.5 mb-6">Pick up where your reviews left off.</p>
 
-              {error && !isFlipped && (
-                <p className="text-sm text-red-400 bg-red-400/10 rounded-lg px-3 py-2 mb-4">
+              {error && !flipped && (
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-sm text-rose bg-rose/10 rounded-xl px-3.5 py-2.5 mb-4"
+                >
                   {error}
-                </p>
+                </motion.p>
               )}
 
               <form onSubmit={handleLogin}>
-                <label className="block text-muted text-xs mb-1">Email</label>
-                <input
-                  type="email"
-                  value={loginEmail}
-                  onChange={(e) => setLoginEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  className="w-full bg-bg text-ink text-sm rounded-lg px-3 py-2 mb-4 border border-white/10 focus:border-teal outline-none transition"
-                />
+                <label className={label}>Email</label>
+                <input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="you@example.com" className={field + " mb-4"} />
 
-                <label className="block text-muted text-xs mb-1">Password</label>
-                <input
-                  type="password"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-bg text-ink text-sm rounded-lg px-3 py-2 mb-6 border border-white/10 focus:border-teal outline-none transition"
-                />
+                <label className={label}>Password</label>
+                <input type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} placeholder="••••••••" className={field + " mb-6"} />
 
-                <button
-                  type="submit"
-                  className="w-full bg-gold text-bg font-display font-bold py-2.5 rounded-full hover:opacity-90 transition"
-                >
-                  Log In
-                </button>
-
-                <p className="text-center text-muted text-sm mt-5 mb-10">
-                  Don't have an account?{" "}
-                  <button
-                    type="button"
-                    onClick={() => { setIsFlipped(true); setError(""); }}
-                    className="text-teal hover:underline"
-                  >
-                    Sign up
-                  </button>
-                </p>
+                <motion.button whileTap={{ scale: 0.98 }} type="submit" className="w-full bg-gold text-bg font-display font-bold py-3 rounded-full">
+                  Log in
+                </motion.button>
               </form>
+
+              <p className="text-center text-muted text-sm mt-6">
+                New here?{" "}
+                <button type="button" onClick={() => flip(true)} className="text-mint hover:underline">
+                  Create an account
+                </button>
+              </p>
             </div>
 
-            {/* BACK FACE — Signup */}
-            <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] bg-surface rounded-2xl p-6 border border-white/5">
-              <h2 className="font-display font-semibold text-lg text-ink mb-4">Create Account</h2>
+            {/* Back — sign up */}
+            <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] bg-surface rounded-3xl p-7 border border-white/5">
+              <h1 className="font-display font-bold text-2xl text-ink">Start your first loop</h1>
+              <p className="text-muted text-sm mt-1.5 mb-6">Your schedule builds from your very first answer.</p>
 
-              {error && isFlipped && (
-                <p className="text-sm text-red-400 bg-red-400/10 rounded-lg px-3 py-2 mb-4">
+              {error && flipped && (
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-sm text-rose bg-rose/10 rounded-xl px-3.5 py-2.5 mb-4"
+                >
                   {error}
-                </p>
+                </motion.p>
               )}
 
               <form onSubmit={handleSignup}>
-                <label className="block text-muted text-xs mb-1">Name</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  className="w-full bg-bg text-ink text-sm rounded-lg px-3 py-2 mb-4 border border-white/10 focus:border-teal outline-none transition"
-                />
+                <label className={label}>Name</label>
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" className={field + " mb-4"} />
 
-                <label className="block text-muted text-xs mb-1">Email</label>
-                <input
-                  type="email"
-                  value={signupEmail}
-                  onChange={(e) => setSignupEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  className="w-full bg-bg text-ink text-sm rounded-lg px-3 py-2 mb-4 border border-white/10 focus:border-teal outline-none transition"
-                />
+                <label className={label}>Email</label>
+                <input type="email" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} placeholder="you@example.com" className={field + " mb-4"} />
 
-                <label className="block text-muted text-xs mb-1">Password</label>
-                <input
-                  type="password"
-                  value={signupPassword}
-                  onChange={(e) => setSignupPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-bg text-ink text-sm rounded-lg px-3 py-2 mb-6 border border-white/10 focus:border-teal outline-none transition"
-                />
+                <label className={label}>Password</label>
+                <input type="password" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} placeholder="At least 8 characters" className={field + " mb-6"} />
 
-                <button
-                  type="submit"
-                  className="w-full bg-teal text-bg font-display font-bold py-2.5 rounded-full hover:opacity-90 transition"
-                >
-                  Sign Up
-                </button>
-
-                <p className="text-center text-muted text-sm mt-5">
-                  Already have an account?{" "}
-                  <button
-                    type="button"
-                    onClick={() => { setIsFlipped(false); setError(""); }}
-                    className="text-teal hover:underline"
-                  >
-                    Log in
-                  </button>
-                </p>
+                <motion.button whileTap={{ scale: 0.98 }} type="submit" className="w-full bg-mint text-bg font-display font-bold py-3 rounded-full">
+                  Create account
+                </motion.button>
               </form>
+
+              <p className="text-center text-muted text-sm mt-6">
+                Already have one?{" "}
+                <button type="button" onClick={() => flip(false)} className="text-mint hover:underline">
+                  Log in
+                </button>
+              </p>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
