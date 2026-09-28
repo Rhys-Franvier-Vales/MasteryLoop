@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Modal from "../components/common/Modal";
 
-const mockUser = { name: "Riya", email: "riya@example.com", level: 6 };
+const mockUser = { name: "Rhys", email: "rhys@example.com", level: 6 };
 
 const stats = [
   { label: "Experience earned", value: "1,240", tone: "gold" },
