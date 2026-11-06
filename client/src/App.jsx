@@ -1,8 +1,10 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import Home from "./pages/Home";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/layout/ProtectedRoute";
+import Home from "./pages/home";
 import Login from "./pages/Login";
-import Dashboard from "./pages/dashboard";
+import Dashboard from "./pages/Dashboard";
 import SkillTree from "./pages/SkillTree";
 import Practice from "./pages/Practice";
 import NotFound from "./pages/NotFound";
@@ -22,9 +24,9 @@ function AnimatedRoutes() {
         <Routes location={location}>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/skilltree" element={<SkillTree />} />
-          <Route path="/practice" element={<Practice />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/skilltree" element={<ProtectedRoute><SkillTree /></ProtectedRoute>} />
+          <Route path="/practice" element={<ProtectedRoute><Practice /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>
@@ -35,7 +37,9 @@ function AnimatedRoutes() {
 function App() {
   return (
     <BrowserRouter>
-      <AnimatedRoutes />
+      <AuthProvider>
+        <AnimatedRoutes />
+      </AuthProvider>
     </BrowserRouter>
   );
 }
